@@ -1,0 +1,129 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+CREATE SCHEMA IF NOT EXISTS `requerimiento` ;
+USE `requerimiento` ;
+
+-- -----------------------------------------------------
+-- Table `requerimiento`.`usuarios`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `requerimiento`.`usuarios` (
+  `id_usuario` INT NOT NULL AUTO_INCREMENT ,
+  `usuario` VARCHAR(11) NOT NULL ,
+  `password` VARCHAR(11) NULL ,
+  `privilegio` TINYINT(1)  NULL ,
+  PRIMARY KEY (`id_usuario`) ,
+  UNIQUE INDEX `id_facturaorden_UNIQUE` (`id_usuario` ASC) ,
+  UNIQUE INDEX `usuario_UNIQUE` (`usuario` ASC) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `requerimiento`.`producto`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `requerimiento`.`producto` (
+  `id_producto` INT NOT NULL AUTO_INCREMENT ,
+  `id_proveedor` INT NULL ,
+  `nombre` VARCHAR(45) NULL ,
+  `cantidad` INT NULL ,
+  `compra_neto` DOUBLE NULL ,
+  `compra_iva` DOUBLE NULL ,
+  `venta_neto` DOUBLE NULL ,
+  `venta_iva` DOUBLE NULL ,
+  `ganancia` DOUBLE NULL ,
+  `id_requerimiento` INT NOT NULL ,
+  PRIMARY KEY (`id_producto`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `requerimiento`.`requerimiento`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `requerimiento`.`requerimiento` (
+  `id_requerimiento` INT NOT NULL AUTO_INCREMENT ,
+  `numero` VARCHAR(45) NULL ,
+  `cliente` VARCHAR(45) NULL ,
+  `fecha` VARCHAR(11) NULL ,
+  `usuarios_id_usuario` INT NOT NULL ,
+  PRIMARY KEY (`id_requerimiento`, `usuarios_id_usuario`) ,
+  INDEX `fk_requerimiento_usuarios1_idx` (`usuarios_id_usuario` ASC) ,
+  CONSTRAINT `fk_requerimiento_usuarios1`
+    FOREIGN KEY (`usuarios_id_usuario` )
+    REFERENCES `requerimiento`.`usuarios` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = MEMORY;
+
+
+-- -----------------------------------------------------
+-- Table `requerimiento`.`proveedores`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `requerimiento`.`proveedores` (
+  `id_proveedor` INT NOT NULL AUTO_INCREMENT ,
+  `nombre` VARCHAR(45) NULL ,
+  `direccion` VARCHAR(45) NULL ,
+  `telefono` VARCHAR(45) NULL ,
+  `contacto` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id_proveedor`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = big5;
+
+
+-- -----------------------------------------------------
+-- Table `requerimiento`.`proveedores_has_producto`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `requerimiento`.`proveedores_has_producto` (
+  `proveedores_id_proveedor` INT NOT NULL ,
+  `producto_id_producto` INT NOT NULL ,
+  PRIMARY KEY (`proveedores_id_proveedor`, `producto_id_producto`) ,
+  INDEX `fk_proveedores_has_producto_producto1_idx` (`producto_id_producto` ASC) ,
+  INDEX `fk_proveedores_has_producto_proveedores_idx` (`proveedores_id_proveedor` ASC) ,
+  CONSTRAINT `fk_proveedores_has_producto_proveedores`
+    FOREIGN KEY (`proveedores_id_proveedor` )
+    REFERENCES `requerimiento`.`proveedores` (`id_proveedor` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_proveedores_has_producto_producto1`
+    FOREIGN KEY (`producto_id_producto` )
+    REFERENCES `requerimiento`.`producto` (`id_producto` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `requerimiento`.`producto_has_requerimiento`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `requerimiento`.`producto_has_requerimiento` (
+  `requerimiento_id_requerimiento` INT NOT NULL ,
+  `producto_id_producto` INT NOT NULL ,
+  PRIMARY KEY (`requerimiento_id_requerimiento`, `producto_id_producto`) ,
+  INDEX `fk_producto_has_requerimiento_requerimiento1_idx` (`requerimiento_id_requerimiento` ASC) ,
+  INDEX `fk_producto_has_requerimiento_producto1_idx` (`producto_id_producto` ASC) ,
+  CONSTRAINT `fk_producto_has_requerimiento_requerimiento1`
+    FOREIGN KEY (`requerimiento_id_requerimiento` )
+    REFERENCES `requerimiento`.`requerimiento` (`id_requerimiento` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_producto_has_requerimiento_producto1`
+    FOREIGN KEY (`producto_id_producto` )
+    REFERENCES `requerimiento`.`producto` (`id_producto` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Data for table `requerimiento`.`usuarios`
+-- -----------------------------------------------------
+SET AUTOCOMMIT=0;
+USE `requerimiento`;
+INSERT INTO `requerimiento`.`usuarios` (`id_usuario`, `usuario`, `password`, `privilegio`) VALUES ('1', 'admin', 'admin', 0);
+
+COMMIT;
